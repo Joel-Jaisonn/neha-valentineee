@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neha, Be My Valentine 💘</title>
+  <style>
+    :root{
+      --pink:#ff4d6d;
+      --rose:#ff8fab;
+      --ink:#2b2b2b;
+      --glass: rgba(255,255,255,.18);
+      --glass2: rgba(255,255,255,.10);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--ink); }
+    body{
+      overflow:hidden;
+      background: radial-gradient(1200px 800px at 20% 20%, #ffe1ea 0%, transparent 60%),
+                  radial-gradient(1000px 700px at 80% 30%, #ffd1dc 0%, transparent 55%),
+                  radial-gradient(1200px 900px at 50% 90%, #ffe9ef 0%, transparent 60%),
+                  linear-gradient(135deg, #fff0f4, #ffe6ee 45%, #fff7f9);
+      position:relative;
+    }
+
+    .sparkles{
+      position:absolute; inset:0;
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,.8) 40%, transparent 60%),
+        radial-gradient(2px 2px at 30% 70%, rgba(255,255,255,.7) 40%, transparent 60%),
+        radial-gradient(1.5px 1.5px at 70% 30%, rgba(255,255,255,.8) 40%, transparent 60%),
+        radial-gradient(1.5px 1.5px at 85% 65%, rgba(255,255,255,.65) 40%, transparent 60%),
+        radial-gradient(1.2px 1.2px at 55% 55%, rgba(255,255,255,.6) 40%, transparent 60%);
+      opacity:.55;
+      filter: blur(.2px);
+      animation: twinkle 4s ease-in-out infinite alternate;
+      pointer-events:none;
+    }
+    @keyframes twinkle { from{opacity:.35} to{opacity:.75} }
+
+    canvas#hearts{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      pointer-events:none;
+      filter: drop-shadow(0 6px 10px rgba(255,77,109,.20));
+    }
+
+    .wrap{
+      height:100%;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      position:relative;
+      z-index:2;
+    }
+
+    .card{
+      width:min(720px, 92vw);
+      padding:26px 24px 22px;
+      border-radius:26px;
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      border: 1px solid rgba(255,255,255,.35);
+      box-shadow: 0 18px 60px rgba(0,0,0,.10);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(255,255,255,.35);
+      border:1px solid rgba(255,255,255,.45);
+      font-weight:600;
+      letter-spacing:.2px;
+      margin-bottom:14px;
+      user-select:none;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: var(--pink);
+      box-shadow: 0 0 0 6px rgba(255,77,109,.18);
+      animation:pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%,100%{ transform:scale(1); opacity:1 }
+      50%{ transform:scale(1.15); opacity:.75 }
+    }
+
+    h1{
+      margin:6px 0 8px;
+      font-size: clamp(28px, 4.5vw, 46px);
+      line-height:1.05;
+      letter-spacing:-.6px;
+    }
+    .sub{
+      margin:0 0 18px;
+      font-size: clamp(14px, 2.2vw, 18px);
+      opacity:.86;
+    }
+
+    .note{
+      background: rgba(255,255,255,.28);
+      border:1px solid rgba(255,255,255,.40);
+      padding:16px 16px;
+      border-radius:18px;
+      margin: 16px 0 18px;
+    }
+    .note p{ margin:0; line-height:1.5; font-size:16px; }
+
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      justify-content:flex-start;
+      margin-top:14px;
+      position:relative;
+      min-height:56px; /* helps when buttons move */
+    }
+
+    button{
+      appearance:none;
+      border:none;
+      padding:14px 16px;
+      border-radius:16px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+      user-select:none;
+      font-size:16px;
+      position:relative;
+      z-index:3;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+
+    .yes{
+      background: linear-gradient(180deg, #ff4d6d, #ff2f57);
+      color:white;
+      box-shadow: 0 14px 22px rgba(255,77,109,.25);
+    }
+    .yes:hover{ filter: brightness(1.03); }
+
+    .no{
+      background: rgba(255,255,255,.38);
+      border: 1px solid rgba(255,255,255,.55);
+      color: #333;
+      box-shadow: 0 12px 18px rgba(0,0,0,.08);
+    }
+
+    .ghost{
+      background: rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.35);
+      color:#333;
+      font-weight:700;
+    }
+
+    .footer{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:16px;
+      opacity:.85;
+      font-size:13px;
+      flex-wrap:wrap;
+    }
+
+    /* modal */
+    .modal{
+      position:fixed; inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.25);
+      z-index:50;
+      padding:20px;
+    }
+    .modal.show{ display:grid; }
+    .modalCard{
+      width:min(560px, 94vw);
+      background: rgba(255,255,255,.92);
+      border-radius:22px;
+      padding:22px 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.6);
+      text-align:center;
+    }
+    .modalCard h2{ margin:0 0 10px; font-size:26px; }
+    .modalCard p{ margin:0 0 14px; line-height:1.5; }
+    .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 14px; justify-content:center; }
+    .chip{
+      padding:8px 10px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:999px;
+      font-size:13px;
+    }
+
+    canvas#confetti{
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      pointer-events:none;
+      z-index:60;
+      display:none;
+    }
+    canvas#confetti.show{ display:block; }
+
+    .corner{
+      position:absolute; right:-40px; top:-40px;
+      width:160px; height:160px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), transparent 60%),
+                  radial-gradient(circle at 70% 30%, rgba(255,255,255,.55), transparent 60%),
+                  radial-gradient(circle at 50% 70%, rgba(255,77,109,.22), transparent 60%);
+      transform: rotate(18deg);
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:13px;
+      opacity:.7;
+    }
+
+    /* “Tap to start music” overlay */
+    .tapOverlay{
+      position:fixed; inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.25);
+      z-index:90;
+      padding:20px;
+    }
+    .tapOverlay.show{ display:grid; }
+    .tapBox{
+      width:min(560px, 92vw);
+      background: rgba(255,255,255,.92);
+      border-radius:22px;
+      padding:20px 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.65);
+      text-align:center;
+    }
+    .tapBox h2{ margin:0 0 8px; font-size:24px; }
+    .tapBox p{ margin:0 0 14px; line-height:1.5; }
+    .tapBox button{
+      width:min(340px, 100%);
+      background: linear-gradient(180deg, #ff4d6d, #ff2f57);
+      color:white;
+      box-shadow: 0 14px 22px rgba(255,77,109,.25);
+    }
+
+    @media (max-width:520px){
+      .row{ justify-content:stretch; }
+      button{ width:100%; }
+      .footer{ justify-content:center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sparkles"></div>
+  <canvas id="hearts"></canvas>
+
+  <div class="wrap">
+    <div class="card" id="card">
+      <div class="corner"></div>
+
+      <div class="badge">
+        <span class="dot"></span>
+        Valentine’s Day with Neha 💘
+      </div>
+
+      <h1>Neha… will you be my Valentine? 💗</h1>
+      <p class="sub">I want to take you out and make Valentine’s Day all about us.</p>
+
+      <div class="note">
+        <p>
+          I’m asking you out for Valentine’s Day:
+          <b>dinner + something sweet + a little surprise</b> 😌✨
+          <br/><br/>
+          Neha… just say yes and I’ll handle everything.
+        </p>
+      </div>
+
+      <div class="row" id="btnArea">
+        <button class="yes" id="yesBtn">Yes, it’s a date 💞</button>
+        <button class="no" id="noBtn">No</button>
+        <button class="ghost" id="detailsBtn">What’s the plan?</button>
+      </div>
+
+      <div class="hint">Warning: the YES button is shy and might run away 😅</div>
+
+      <div class="footer">
+        <div>Made with love ❤️</div>
+        <div>Music will try to auto-play 🎶</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modalCard">
+      <h2>Neha’s Valentine’s Day ✨</h2>
+      <p>Here’s my plan (and I’ll customize it to what you want):</p>
+      <div class="chips">
+        <div class="chip">🌹 Flowers</div>
+        <div class="chip">🍽️ Dinner date</div>
+        <div class="chip">🍰 Dessert</div>
+        <div class="chip">🎶 Music</div>
+        <div class="chip">📸 Photos</div>
+        <div class="chip">💌 A surprise</div>
+      </div>
+      <p>Just say “yes” and I’ll handle the details 😌💗</p>
+      <div class="row" style="margin-top:14px; justify-content:center;">
+        <button class="yes" id="closeModal">Okayyy 💗</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tapOverlay" id="tapOverlay">
+    <div class="tapBox">
+      <h2>Tap once for music 💗</h2>
+      <p>Your browser blocks auto-play sometimes. One tap and the romantic music starts 🎶</p>
+      <button id="tapToStart">Start the music</button>
+    </div>
+  </div>
+
+  <canvas id="confetti"></canvas>
+
+  <script>
+    // ---------- Floating Hearts Background ----------
+    const heartsCanvas = document.getElementById("hearts");
+    const hctx = heartsCanvas.getContext("2d");
+    let W, H;
+
+    function resizeHearts(){
+      W = heartsCanvas.width = window.innerWidth * devicePixelRatio;
+      H = heartsCanvas.height = window.innerHeight * devicePixelRatio;
+      heartsCanvas.style.width = window.innerWidth + "px";
+      heartsCanvas.style.height = window.innerHeight + "px";
+      hctx.setTransform(1,0,0,1,0,0);
+      hctx.scale(1,1);
+    }
+    window.addEventListener("resize", resizeHearts);
+    resizeHearts();
+
+    const hearts = [];
+    const heartCount = 26;
+
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    function spawnHeart(){
+      const size = rand(10, 24) * devicePixelRatio;
+      hearts.push({
+        x: rand(0, W),
+        y: H + rand(0, H*0.2),
+        size,
+        speed: rand(0.35, 1.2) * devicePixelRatio,
+        drift: rand(-0.35, 0.35) * devicePixelRatio,
+        wobble: rand(0, Math.PI*2),
+        wobbleSpeed: rand(0.006, 0.02),
+        alpha: rand(0.35, 0.75),
+      });
+    }
+    for(let i=0;i<heartCount;i++) spawnHeart();
+
+    function drawHeart(x,y,s,alpha){
+      hctx.save();
+      hctx.globalAlpha = alpha;
+      hctx.translate(x,y);
+      hctx.rotate(Math.sin((x+y)/5000) * 0.3);
+      hctx.beginPath();
+      const t = s/16;
+      hctx.moveTo(0, 3*t);
+      hctx.bezierCurveTo(0, 0, -8*t, 0, -8*t, 5*t);
+      hctx.bezierCurveTo(-8*t, 10*t, 0, 14*t, 0, 18*t);
+      hctx.bezierCurveTo(0, 14*t, 8*t, 10*t, 8*t, 5*t);
+      hctx.bezierCurveTo(8*t, 0, 0, 0, 0, 3*t);
+      hctx.closePath();
+      const grad = hctx.createLinearGradient(-s, -s, s, s);
+      grad.addColorStop(0, "rgba(255,77,109,1)");
+      grad.addColorStop(1, "rgba(255,143,171,1)");
+      hctx.fillStyle = grad;
+      hctx.fill();
+      hctx.restore();
+    }
+
+    function animateHearts(){
+      hctx.clearRect(0,0,W,H);
+      for(const p of hearts){
+        p.wobble += p.wobbleSpeed;
+        p.y -= p.speed;
+        p.x += p.drift + Math.sin(p.wobble) * (0.35 * devicePixelRatio);
+        drawHeart(p.x, p.y, p.size, p.alpha);
+        if(p.y < -50 * devicePixelRatio){
+          p.y = H + rand(0, H*0.2);
+          p.x = rand(0, W);
+        }
+      }
+      requestAnimationFrame(animateHearts);
+    }
+    animateHearts();
+
+    // ---------- Modals ----------
+    const detailsBtn = document.getElementById("detailsBtn");
+    const modal = document.getElementById("modal");
+    const closeModal = document.getElementById("closeModal");
+
+    detailsBtn.addEventListener("click", () => modal.classList.add("show"));
+    closeModal.addEventListener("click", () => modal.classList.remove("show"));
+    modal.addEventListener("click", (e) => { if(e.target === modal) modal.classList.remove("show"); });
+
+    // ---------- Moving Buttons ----------
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const btnArea = document.getElementById("btnArea");
+
+    function moveButton(btn){
+      // make sure it can move within the card area
+      const areaRect = btnArea.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+
+      const padding = 6;
+      const maxX = Math.max(padding, areaRect.width - btnRect.width - padding);
+      const maxY = Math.max(padding, areaRect.height - btnRect.height - padding);
+
+      const x = rand(padding, maxX);
+      const y = rand(padding, maxY);
+
+      // allow absolute positioning inside btnArea
+      btnArea.style.position = "relative";
+      btn.style.position = "absolute";
+      btn.style.left = x + "px";
+      btn.style.top = y + "px";
+    }
+
+    // YES runs away when hovered/touched (and sometimes even randomly)
+    yesBtn.addEventListener("mouseenter", () => moveButton(yesBtn));
+    yesBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveButton(yesBtn); }, {passive:false});
+
+    // occasionally wiggle yes button on its own for fun
+    setInterval(() => {
+      if (Math.random() < 0.25) moveButton(yesBtn);
+    }, 1200);
+
+    // NO also moves sometimes (so both are “surprise-y”)
+    noBtn.addEventListener("mouseenter", () => { if(Math.random()<0.35) moveButton(noBtn); });
+
+    // ---------- Confetti ----------
+    const confettiCanvas = document.getElementById("confetti");
+    const cctx = confettiCanvas.getContext("2d");
+    let cw, ch;
+
+    function resizeConfetti(){
+      cw = confettiCanvas.width = window.innerWidth * devicePixelRatio;
+      ch = confettiCanvas.height = window.innerHeight * devicePixelRatio;
+      confettiCanvas.style.width = window.innerWidth + "px";
+      confettiCanvas.style.height = window.innerHeight + "px";
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeConfetti();
+
+    const confettiPieces = [];
+    function launchConfetti(){
+      confettiCanvas.classList.add("show");
+      confettiPieces.length = 0;
+
+      const N = 240;
+      for(let i=0;i<N;i++){
+        confettiPieces.push({
+          x: (window.innerWidth/2 + rand(-150,150)) * devicePixelRatio,
+          y: (window.innerHeight/2 + rand(-100,100)) * devicePixelRatio,
+          vx: rand(-7,7) * devicePixelRatio,
+          vy: rand(-10,-2) * devicePixelRatio,
+          g: rand(0.12,0.22) * devicePixelRatio,
+          r: rand(3,6) * devicePixelRatio,
+          rot: rand(0,Math.PI*2),
+          vr: rand(-0.2,0.2),
+          life: rand(90, 160)
+        });
+      }
+
+      function step(){
+        cctx.clearRect(0,0,cw,ch);
+        for(const p of confettiPieces){
+          p.life -= 1;
+          p.vy += p.g;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vr;
+
+          cctx.save();
+          cctx.translate(p.x, p.y);
+          cctx.rotate(p.rot);
+
+          const palette = ["#ff4d6d","#ff8fab","#ffd6e0","#ffffff","#ff2f57"];
+          cctx.fillStyle = palette[(Math.random()*palette.length)|0];
+          cctx.fillRect(-p.r, -p.r/2, p.r*2.2, p.r);
+          cctx.restore();
+        }
+
+        for(let i=confettiPieces.length-1;i>=0;i--){
+          if(confettiPieces[i].life <= 0 || confettiPieces[i].y > ch + 80) confettiPieces.splice(i,1);
+        }
+        if(confettiPieces.length){
+          requestAnimationFrame(step);
+        } else {
+          confettiCanvas.classList.remove("show");
+        }
+      }
+      step();
+    }
+
+    // ---------- Surprise Overlays ----------
+    function showOverlay(title, message, emoji){
+      const overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.inset = "0";
+      overlay.style.display = "grid";
+      overlay.style.placeItems = "center";
+      overlay.style.background = "rgba(0,0,0,.18)";
+      overlay.style.zIndex = "85";
+      overlay.innerHTML = `
+        <div style="
+          width:min(580px, 92vw);
+          background: rgba(255,255,255,.92);
+          border:1px solid rgba(255,255,255,.65);
+          border-radius:22px;
+          padding:22px 18px;
+          box-shadow: 0 24px 80px rgba(0,0,0,.22);
+          text-align:center;">
+          <div style="font-size:46px; margin-bottom:6px;">${emoji}</div>
+          <h2 style="margin:0 0 10px; font-size:26px;">${title}</h2>
+          <p style="margin:0 0 14px; line-height:1.55;">${message}</p>
+          <button id="okBtn" style="
+            border:none; cursor:pointer;
+            padding:14px 16px; border-radius:16px;
+            font-weight:800; font-size:16px;
+            color:white;
+            background: linear-gradient(180deg, #ff4d6d, #ff2f57);
+            box-shadow: 0 14px 22px rgba(255,77,109,.25);
+            width:min(340px, 100%);
+          ">Okay 💗</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      overlay.querySelector("#okBtn").addEventListener("click", () => overlay.remove());
+      overlay.addEventListener("click", (e)=> { if(e.target === overlay) overlay.remove(); });
+    }
+
+    // YES surprise
+    yesBtn.addEventListener("click", () => {
+      launchConfetti();
+      showOverlay(
+        "Neha said YES 😭💗",
+        "It’s a date. I’m taking you out for Valentine’s Day. Dinner + dessert + a surprise… and you’re the best part of the plan 😌✨",
+        "💖"
+      );
+    });
+
+    // NO surprise (still cute + playful)
+    noBtn.addEventListener("click", () => {
+      // tiny “reverse surprise” lol
+      launchConfetti();
+      showOverlay(
+        "Nice try 😌",
+        "No isn’t an option today, Neha 😅💗\n\nOkay okay… I’ll ask again properly:\nWill you be my Valentine? 💘",
+        "😏"
+      );
+      // make yes easier to click after "no"
+      yesBtn.style.position = "static";
+      noBtn.style.position = "static";
+    });
+
+    // ---------- Romantic Music (best-effort autoplay) ----------
+    // Note: Most browsers block sound autoplay until a user gesture.
+    // We attempt autoplay; if blocked, show “Tap once to start music”.
+
+    const tapOverlay = document.getElementById("tapOverlay");
+    const tapToStart = document.getElementById("tapToStart");
+
+    let audioCtx = null;
+    let playing = false;
+    let master = null;
+
+    function ensureAudio(){
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if(master) return;
+
+      master = audioCtx.createGain();
+      master.gain.value = 0.045; // soft volume
+      master.connect(audioCtx.destination);
+
+      // dreamy pad
+      const pad = audioCtx.createOscillator();
+      pad.type = "sine";
+      const padGain = audioCtx.createGain();
+      padGain.gain.value = 0.55;
+      pad.connect(padGain).connect(master);
+      pad.frequency.value = 196; // G3
+      pad.start();
+
+      // gentle harmony
+      const bell = audioCtx.createOscillator();
+      bell.type = "triangle";
+      const bellGain = audioCtx.createGain();
+      bellGain.gain.value = 0.30;
+      bell.connect(bellGain).connect(master);
+      bell.frequency.value = 294; // D4
+      bell.start();
+
+      // little melody loop
+      const notes = [294, 330, 392, 370, 330, 294, 262, 294]; // sweet loop
+      let i = 0;
+      setInterval(() => {
+        if(!playing || !audioCtx) return;
+        const f = notes[i % notes.length];
+        const t = audioCtx.currentTime;
+        pad.frequency.setTargetAtTime(f/1.5, t, 0.06);
+        bell.frequency.setTargetAtTime(f, t, 0.06);
+        i++;
+      }, 900);
+    }
+
+    async function startMusic(){
+      try{
+        ensureAudio();
+        await audioCtx.resume();
+        playing = true;
+        // tiny fade in
+        master.gain.setTargetAtTime(0.045, audioCtx.currentTime, 0.08);
+        tapOverlay.classList.remove("show");
+      }catch(e){
+        // if it still fails, keep overlay
+        tapOverlay.classList.add("show");
+      }
+    }
+
+    // Attempt autoplay on load
+    window.addEventListener("load", async () => {
+      try{
+        ensureAudio();
+        // try to resume; many browsers will block this without user gesture
+        await audioCtx.resume();
+        playing = true;
+      }catch(e){
+        tapOverlay.classList.add("show");
+      }
+    });
+
+    // If blocked, one tap starts it
+    tapToStart.addEventListener("click", startMusic);
+    tapOverlay.addEventListener("click", (e) => {
+      if(e.target === tapOverlay) startMusic();
+    });
+
+    // Also: any first click anywhere can start music
+    document.addEventListener("pointerdown", () => {
+      if(!playing) startMusic();
+    }, { once:false });
+
+  </script>
+</body>
+</html>
